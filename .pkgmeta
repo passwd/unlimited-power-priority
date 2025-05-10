@@ -1,0 +1,13 @@
+package-as: UnlimitedPowerPriority
+
+ignore:
+  - .git
+  - .github
+  - README.md
+  - LICENSE
+
+externals:
+  lib/LibStub:
+    url: https://repos.wowace.com/wow/libstub/trunk
+  lib/LibDBIcon-1.0:
+    url: https://repos.wowace.com/wow/libdbicon-1-0/trunk

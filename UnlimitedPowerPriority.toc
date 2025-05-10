@@ -1,7 +1,7 @@
 ## Interface: 110105
 ## Title: Unlimited Power Priority
 ## Notes: Prioritize Power Infusion targets
-## Version: 0.2
+## Version: v1.0.1
 ## Author: Ndika-Lightbringer
 ## SavedVariables: UPP_Saved
 ## X-License: MIT
