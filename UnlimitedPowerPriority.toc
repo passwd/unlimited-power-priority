@@ -4,12 +4,28 @@
 ## Version: 0.2
 ## Author: Ndika-Lightbringer
 ## SavedVariables: UPP_Saved
+## Dependencies: Blizzard_Settings
+
+lib/externals/libdatabroker-1-1/LibDataBroker-1.1.lua
+lib/externals/LibDBIcon-1.0/LibDBIcon-1.0/LibDBIcon-1.0.lua
 
 lib/core.lua
 
-lib/logic/priority.lua
+lib/constants/icons.lua
+lib/constants/chat_messages.lua
+
+lib/helpers/announce.lua
+lib/helpers/button_icons.lua
+lib/helpers/create_macro.lua
+lib/helpers/log.lua
+
+lib/logic/cast.lua
+lib/logic/cmd_handlers.lua
 lib/logic/events.lua
 
-lib/ui/config.lua
-
 lib/ui/frames.lua
+lib/ui/options_interface.lua
+lib/ui/minimap.lua
+
+
+

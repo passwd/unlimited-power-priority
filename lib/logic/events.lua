@@ -10,10 +10,11 @@ function UnlimitedPowerPriority:InitSavedVars()
     self.db = UPP_Saved
 
     -- Init default structures
-    self.db.priorityList = self.db.priorityList or {}
+    self.db.spellTarget = self.db.spellTarget or ""
     self.db.settings = self.db.settings or {}
-
-    print("Unlimited Power Priority saved variables loaded.")
+    self.db.announceTargets = self.db.announceTargets or {}
+    self.db.announceMessages = self.db.announceMessages or {}
+    self.db.macroCreated = self.db.macroCreated or false
 end
 
 function UnlimitedPowerPriority:QueueInspections()
@@ -24,7 +25,7 @@ function UnlimitedPowerPriority:QueueInspections()
     if count == 0 then count = 1 end
 
     for i = 1, count do
-        local unit = (groupType == "raid") and "raid"..i or (i == count and "player" or "party"..i)
+        local unit = (groupType == "raid") and "raid" .. i or (i == count and "player" or "party" .. i)
         if UnitIsPlayer(unit) and CanInspect(unit) then
             table.insert(self.inspectQueue, unit)
         end

@@ -1,10 +1,8 @@
--- Placeholder for main UI frames and elements
-
 function UnlimitedPowerPriority:CreateMainFrame()
     if self.mainFrame then return end
 
     local frame = CreateFrame("Frame", "UPP_MainFrame", UIParent, "BasicFrameTemplateWithInset")
-    frame:SetSize(300, 400)
+    frame:SetSize(360, 500)
     frame:SetPoint("CENTER")
     frame:SetMovable(true)
     frame:EnableMouse(true)
@@ -26,6 +24,8 @@ function UnlimitedPowerPriority:CreateMainFrame()
     rescanBtn:SetSize(100, 22)
     rescanBtn:SetPoint("TOPLEFT", 0, 0)
     rescanBtn:SetText("Rescan")
+    rescanBtn.Text:ClearAllPoints()
+    rescanBtn.Text:SetPoint("CENTER", 0, -1)
     rescanBtn:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:SetText("Re-inspect all group members to refresh spec and role icons.")
@@ -37,6 +37,15 @@ function UnlimitedPowerPriority:CreateMainFrame()
     rescanBtn:SetScript("OnClick", function()
         UnlimitedPowerPriority:QueueInspections()
         UnlimitedPowerPriority:RefreshMemberList()
+    end)
+
+    local optionsBtn = CreateFrame("Button", nil, toolbar, "UIPanelButtonTemplate")
+    optionsBtn:SetSize(80, 22)
+    optionsBtn:SetPoint("RIGHT", rescanBtn, "RIGHT", 88, 0)
+    optionsBtn:SetText("Options")
+    optionsBtn:SetScript("OnClick", function()
+        UnlimitedPowerPriority:CreateConfigFrame()
+        UnlimitedPowerPriority:CreateConfigFrame()
     end)
 
     -- Create ScrollFrame
@@ -56,22 +65,33 @@ end
 function UnlimitedPowerPriority:RefreshMemberList()
     if not self.mainFrame or not self.mainFrame.scrollContent then return end
 
+    self:Log("Updating party list...")
+    self.unitButtons = {}
     local content = self.mainFrame.scrollContent
 
     -- Clear previous children
-    for _, child in ipairs({content:GetChildren()}) do
+    for _, child in ipairs({ content:GetChildren() }) do
         child:Hide()
     end
 
     local groupType = IsInRaid() and "raid" or "party"
     local count = GetNumGroupMembers()
-    if count == 0 then count = 1 end  -- fallback for solo testing
+    if count == 0 then count = 1 end -- fallback for solo testing
 
-    local rowHeight = 24
+    local rowHeight = 28
     local yOffset = -10
 
+    local units = {}
+
+    -- Build unit list
     for i = 1, count do
-        local unit = (groupType == "raid") and "raid"..i or (i == count and "player" or "party"..i)
+        local unit = (groupType == "raid") and "raid" .. i or (i == count and "player" or "party" .. i)
+        if UnitExists(unit) then
+            table.insert(units, unit)
+        end
+    end
+
+    for _, unit in ipairs(units) do
         if UnitExists(unit) then
             local name = UnitName(unit)
             local _, class = UnitClass(unit)
@@ -88,15 +108,12 @@ function UnlimitedPowerPriority:RefreshMemberList()
             roleIcon:SetSize(16, 16)
             roleIcon:SetPoint("LEFT", 10, 0)
             if role ~= "NONE" then
-            local roleCoords = {
-                -- TANK = {0, 0.26171775, 0.26171775, 0.5234275},
-                -- HEALER = {0.26171775, 0.5234275, 0, 0.26171875},
-                -- DAMAGER = {0.5234375, 0.78515625, 0, 0.26171875}
-    PARTY_LEADER = {0.0000, 0.2859, 0.0000, 0.3359},  -- 0.0500 subtracted
-    HEALER       = {0.2859, 0.6218, 0.0000, 0.3359},
-    TANK         = {0.0000, 0.2859, 0.3359, 0.6718},
-    DAMAGER      = {0.2859, 0.6218, 0.3359, 0.6718},
-            }
+                local roleCoords = {
+                    PARTY_LEADER = { 0.0000, 0.2859, 0.0000, 0.3359 }, -- 0.0500 subtracted
+                    HEALER       = { 0.2859, 0.6218, 0.0000, 0.3359 },
+                    TANK         = { 0.0000, 0.2859, 0.3359, 0.6718 },
+                    DAMAGER      = { 0.2859, 0.6218, 0.3359, 0.6718 },
+                }
                 roleIcon:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES")
                 if roleCoords[role] then
                     roleIcon:SetTexCoord(unpack(roleCoords[role]))
@@ -130,13 +147,42 @@ function UnlimitedPowerPriority:RefreshMemberList()
                 end
             end
 
+            if not UnitIsPlayer(unit) then
+                specIcon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+            end
+
             -- Class-colored name
             local nameText = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
             nameText:SetPoint("LEFT", specIcon, "RIGHT", 5, 0)
             nameText:SetText(name or "Unknown")
             nameText:SetTextColor(classColor.r, classColor.g, classColor.b)
 
-            btn:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
+
+            -- Select Target
+            local btnHeight = 22
+            local selectBtn = self:CreateUnitSelectButton(
+                btn, "RIGHT", btnHeight, unit,
+                function()
+                    self:SelectUnit(unit)
+                end,
+                function()
+                    self:ClearUnit(unit)
+                end)
+
+            table.insert(self.unitButtons, selectBtn)
         end
     end
+
+    local contentHeight = math.abs(yOffset) + 10 -- +10 padding at the bottom
+    self.mainFrame.scrollContent:SetHeight(contentHeight)
+end
+
+function UnlimitedPowerPriority:SelectUnit(uid)
+    self.db.spellTarget = uid
+    UnlimitedPowerPriority:EnsureMacro()
+end
+
+function UnlimitedPowerPriority:ClearUnit(uid)
+    self.db.spellTarget = nil
+    UnlimitedPowerPriority:EnsureMacro()
 end
