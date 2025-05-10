@@ -1,0 +1,1 @@
+-- Placeholder for UI config panel setup

@@ -1,0 +1,15 @@
+## Interface: 100007
+## Title: Unlimited Power Priority
+## Notes: Prioritize Power Infusion targets
+## Version: 0.2
+## Author: Ndika-Lightbringer
+## SavedVariables: UPP_Saved
+
+lib/core.lua
+
+lib/logic/priority.lua
+lib/logic/events.lua
+
+lib/ui/config.lua
+
+lib/ui/frames.lua
