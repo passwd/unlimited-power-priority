@@ -39,6 +39,15 @@ function UnlimitedPowerPriority:CreateMainFrame()
         UnlimitedPowerPriority:RefreshMemberList()
     end)
 
+    local optionsBtn = CreateFrame("Button", nil, toolbar, "UIPanelButtonTemplate")
+    optionsBtn:SetSize(80, 22)
+    optionsBtn:SetPoint("RIGHT", rescanBtn, "RIGHT", 88, 0)
+    optionsBtn:SetText("Options")
+    optionsBtn:SetScript("OnClick", function()
+        UnlimitedPowerPriority:CreateConfigFrame()
+        UnlimitedPowerPriority:CreateConfigFrame()
+    end)
+
     -- Create ScrollFrame
     local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", 10, -65)
@@ -56,6 +65,8 @@ end
 function UnlimitedPowerPriority:RefreshMemberList()
     if not self.mainFrame or not self.mainFrame.scrollContent then return end
 
+    self:Log("Updating party list...")
+    self.unitButtons = {}
     local content = self.mainFrame.scrollContent
 
     -- Clear previous children
@@ -79,15 +90,6 @@ function UnlimitedPowerPriority:RefreshMemberList()
             table.insert(units, unit)
         end
     end
-
-    -- Sort units by saved priority
-    table.sort(units, function(a, b)
-        local nameA = UnitName(a)
-        local nameB = UnitName(b)
-        local prioA = self.db.priorityList[nameA] or 999
-        local prioB = self.db.priorityList[nameB] or 999
-        return prioA < prioB
-    end)
 
     for _, unit in ipairs(units) do
         if UnitExists(unit) then
@@ -156,27 +158,18 @@ function UnlimitedPowerPriority:RefreshMemberList()
             nameText:SetTextColor(classColor.r, classColor.g, classColor.b)
 
 
-            -- Move Down
+            -- Select Target
             local btnHeight = 22
-            local down = self:CreateMoveButton(
-                btn, "RIGHT", 80, 60, btnHeight, "Down", "Move down",
+            local selectBtn = self:CreateUnitSelectButton(
+                btn, "RIGHT", btnHeight, unit,
                 function()
-                    self:MoveUnit(unit, 1)
+                    self:SelectUnit(unit)
+                end,
+                function()
+                    self:ClearUnit(unit)
                 end)
 
-            -- Move Up
-            local up = self:CreateMoveButton(
-                down, "LEFT", -2, 40, btnHeight, "Up", "Move Up",
-                function()
-                    self:MoveUnit(unit, -1)
-                end)
-
-            -- Move to Top
-            local toTop = self:CreateMoveButton(
-                up, "LEFT", -2, 40, btnHeight, "Top", "Move to top",
-                function()
-                    self:MoveUnitToTop(unit)
-                end)
+            table.insert(self.unitButtons, selectBtn)
         end
     end
 
@@ -184,48 +177,12 @@ function UnlimitedPowerPriority:RefreshMemberList()
     self.mainFrame.scrollContent:SetHeight(contentHeight)
 end
 
--- Moves a unit up or down by 'offset' in the saved priority list
-function UnlimitedPowerPriority:MoveUnit(uid, offset)
-    local list = {}
-    for u, v in pairs(self.db.priorityList or {}) do table.insert(list, { name = u, prio = v }) end
-    table.sort(list, function(a, b) return a.prio < b.prio end)
-    -- ensure uid in list
-    local exists = false
-    for _, e in ipairs(list) do if e.name == UnitName(uid) then exists = true end end
-    if not exists then table.insert(list, { name = UnitName(uid), prio = #list + 1 }) end
-    -- find current index
-    local idx
-    for i, e in ipairs(list) do
-        if e.name == UnitName(uid) then
-            idx = i
-            break
-        end
-    end
-    local newIdx = idx + offset
-    if newIdx >= 1 and newIdx <= #list then
-        -- swap
-        local other = list[newIdx].name
-        self.db.priorityList[UnitName(uid)] = newIdx
-        self.db.priorityList[other] = idx
-        self:RefreshMemberList()
-    end
+function UnlimitedPowerPriority:SelectUnit(uid)
+    self.db.spellTarget = uid
+    UnlimitedPowerPriority:EnsureMacro()
 end
 
--- Moves a unit directly to the top of the priority list
-function UnlimitedPowerPriority:MoveUnitToTop(uid)
-    local list = {}
-    for u, v in pairs(self.db.priorityList or {}) do table.insert(list, { name = u, prio = v }) end
-    table.sort(list, function(a, b) return a.prio < b.prio end)
-    -- remove uid from list
-    for i, e in ipairs(list) do
-        if e.name == UnitName(uid) then
-            table.remove(list, i); break
-        end
-    end
-    -- insert at position 1
-    table.insert(list, 1, { name = UnitName(uid) })
-    -- rebuild priorities
-    self.db.priorityList = {}
-    for i, e in ipairs(list) do self.db.priorityList[e.name] = i end
-    self:RefreshMemberList()
+function UnlimitedPowerPriority:ClearUnit(uid)
+    self.db.spellTarget = nil
+    UnlimitedPowerPriority:EnsureMacro()
 end

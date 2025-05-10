@@ -10,7 +10,7 @@ function UnlimitedPowerPriority:InitSavedVars()
     self.db = UPP_Saved
 
     -- Init default structures
-    self.db.priorityList = self.db.priorityList or {}
+    self.db.spellTarget = self.db.spellTarget or {}
     self.db.settings = self.db.settings or {}
     self.db.announceTargets = self.db.announceTargets or {}
     self.db.announceMessages = self.db.announceMessages or {}

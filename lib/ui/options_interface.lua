@@ -5,7 +5,7 @@ function UnlimitedPowerPriority:CreateConfigFrame()
     end
 
     local frame = CreateFrame("Frame", "UPP_ConfigFrame", UIParent, "BasicFrameTemplateWithInset")
-    frame:SetSize(500, 550)
+    frame:SetSize(500, 480)
     frame:SetPoint("CENTER")
     frame:SetMovable(true)
     frame:EnableMouse(true)
@@ -26,6 +26,15 @@ function UnlimitedPowerPriority:CreateConfigFrame()
     last = self:ResetAnnounceValues(frame, last)
     last = self:CreateMacroButton(frame, last)
     last = self:CreateConfigActionButton(frame, last)
+
+    frame:SetFrameStrata("DIALOG")
+    frame:SetFrameLevel(20) -- Higher than the target window (which can be ~10)
+
+    -- Ensure children like title text and button rows are also bumped up
+    for _, region in ipairs({ frame:GetRegions() }) do
+        if region.SetDrawLayer then region:SetDrawLayer("OVERLAY") end
+        if region.SetFrameLevel then region:SetFrameLevel(21) end
+    end
 
     self.configFrame = frame
 end
@@ -123,9 +132,11 @@ function UnlimitedPowerPriority:CreateAnnounceInputs(parent, anchor)
 end
 
 function UnlimitedPowerPriority:CreateConfigActionButton(frame)
-    local actionButton = CreateFrame("Button", "UPP_ActionButton", frame, "SecureActionButtonTemplate, ActionButtonTemplate")
+    local actionButton = CreateFrame("Button", "UPP_ActionButton", frame, "SecureActionButtonTemplate, BackdropTemplate")
+
     actionButton:SetSize(36, 36)
-    actionButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -20, -32) -- ✅ anchor safely to the frame
+    actionButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -80, -60)
+
 
     local index = GetMacroIndexByName("UPP_CastPI")
     if index > 0 then
@@ -146,26 +157,31 @@ function UnlimitedPowerPriority:CreateConfigActionButton(frame)
         if macroIndex > 0 then
             PickupMacro(macroIndex)
         else
-            print("Macro not found. Use 'Recreate Macro' first.")
+            self:Log("Macro not found. Use 'Recreate Macro' first.")
         end
     end)
 
-    local icon = _G[actionButton:GetName() .. "Icon"]
-    if icon then
-        icon:SetTexture("Interface\\Icons\\Spell_Holy_PowerInfusion")
-    end
+    local icon = actionButton:CreateTexture(nil, "ARTWORK")
+    icon:SetTexture("Interface\\Icons\\Spell_Holy_PowerInfusion")
+    icon:SetTexCoord(0, 1, 0, 1)
+    icon:SetAllPoints()
+    actionButton.icon = icon
+
+
+    local label = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    label:SetPoint("BOTTOM", actionButton, "TOP", 0, 6)
+    label:SetText("Drag me to your action bar")
 
     local openMacroBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-openMacroBtn:SetSize(120, 24)
-openMacroBtn:SetPoint("TOPRIGHT", actionButton, "BOTTOMRIGHT", 0, -6)
-openMacroBtn:SetText("Open Macros")
-openMacroBtn:SetScript("OnClick", function()
-    ShowMacroFrame()
-end)
+    openMacroBtn:SetSize(120, 24)
+    openMacroBtn:SetPoint("TOP", actionButton, "BOTTOM", 0, -10)
+    openMacroBtn:SetText("Open Macros")
+    openMacroBtn:SetScript("OnClick", function()
+        ShowMacroFrame()
+    end)
 
     return actionButton
 end
-
 
 function UnlimitedPowerPriority:CreateMacroButton(frame, anchor)
     local recreateButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")

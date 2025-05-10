@@ -1,26 +1,23 @@
-    UnlimitedPowerPriority.handlers = {
-        cast = function()
-            UnlimitedPowerPriority:CastPowerInfusion()
-        end,
+UnlimitedPowerPriority.handlers = {
+    macro = function()
+        UnlimitedPowerPriority:EnsureMacro()
+    end,
 
-        config = function()
-            UnlimitedPowerPriority:CreateConfigFrame()
-            UnlimitedPowerPriority.configFrame:Show()
-        end,
+    config = function()
+        UnlimitedPowerPriority:CreateConfigFrame()
+        UnlimitedPowerPriority.configFrame:Show()
+    end,
 
-        window = function()
-            if not UnlimitedPowerPriority.initialized then
-                print("Unlimited Power Priority is still loading. Please try again.")
-                return
-            end
-
-            UnlimitedPowerPriority:CreateMainFrame()
-            if UnlimitedPowerPriority.mainFrame:IsShown() then
-                UnlimitedPowerPriority.mainFrame:Hide()
-            else
-                UnlimitedPowerPriority.mainFrame:Show()
-                UnlimitedPowerPriority:QueueInspections()
-                UnlimitedPowerPriority:RefreshMemberList()
-            end
-        end,
-    }
+    window = function()
+        UnlimitedPowerPriority:CreateMainFrame()
+        UnlimitedPowerPriority.mainFrame:Show()
+        UnlimitedPowerPriority:QueueInspections()
+        UnlimitedPowerPriority:RefreshMemberList()
+    end,
+    help = function()
+        UnlimitedPowerPriority:Log("|cffffd200Unlimited Power Priority Commands:|r")
+        UnlimitedPowerPriority:Log("  |cffffff78/upp config|r - Open settings")
+        UnlimitedPowerPriority:Log("  |cffffff78/upp window|r - Toggle main frame")
+        UnlimitedPowerPriority:Log("  |cffffff78/upp macro|r  - Update PI macro")
+    end
+}

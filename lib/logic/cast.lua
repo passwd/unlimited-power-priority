@@ -1,30 +1,35 @@
-function UnlimitedPowerPriority:CastPowerInfusion()
-    print(">> CastPowerInfusion() called")
+function UnlimitedPowerPriority:RegisterCastNotificationHook()
+    if self.castNotificationFrame then return end
 
-    local CastSpellByName   = _G.CastSpellByName
-    local UnitIsPlayer      = _G.UnitIsPlayer
-    local UnitIsConnected   = _G.UnitIsConnected
-    local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
-    local UnitInRange       = _G.UnitInRange
+    local POWER_INFUSION_ID = 10060
 
-    if type(CastSpellByName) ~= "function" then
-        print(">> CastSpellByName not available. Cannot cast.")
-        return
-    end
+    local f = CreateFrame("Frame")
+    f:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 
-    local spellName = "Power Infusion"
+    f:SetScript("OnEvent", function(_, _, unit, _, spellID)
+        if unit ~= "player" or spellID ~= POWER_INFUSION_ID then return end
 
-    for name, _ in self:SortedPriorityList() do
-        local unit = self:FindUnitByName(name)
-        if unit and UnitIsPlayer(unit) and UnitIsConnected(unit)
-            and not UnitIsDeadOrGhost(unit) and UnitInRange(unit) then
+        local primary = self.db.spellTarget
+        local fallback = "focus"
+        local usedTarget
 
-            CastSpellByName(spellName, unit)
-            print("Casting Power Infusion on:", name)
-            self:AnnouncePowerInfusion(unit)
-            return
+        -- Check if the primary target is valid
+        if primary and UnitExists(primary) and UnitIsFriend("player", primary) and not UnitIsDeadOrGhost(primary) then
+            usedTarget = primary
+        elseif UnitExists(fallback) and UnitIsFriend("player", fallback) and not UnitIsDeadOrGhost(fallback) then
+            usedTarget = fallback
         end
-    end
 
-    print("No valid target found for Power Infusion.")
+        if usedTarget then
+            self:AnnouncePowerInfusion(usedTarget)
+
+            if usedTarget == fallback then
+                self:Log("UPP: Power Infusion cast on fallback (focus) instead of selected target.")
+            end
+        else
+            self:Log("UPP: Power Infusion cast, but no valid target found.")
+        end
+    end)
+
+    self.castNotificationFrame = f
 end
