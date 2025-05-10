@@ -4,12 +4,28 @@
 ## Version: 0.2
 ## Author: Ndika-Lightbringer
 ## SavedVariables: UPP_Saved
+## Dependencies: Blizzard_Settings
 
 lib/core.lua
 
-lib/logic/priority.lua
+lib/constants/icons.lua
+lib/constants/chat_messages.lua
+
+lib/helpers/announce.lua
+lib/helpers/button_icons.lua
+lib/helpers/create_action_btn.lua
+lib/helpers/create_macro.lua
+lib/helpers/create_virtual_btn.lua
+lib/helpers/find_unit_by_name.lua
+lib/helpers/log.lua
+lib/helpers/sort_priority_list.lua
+
+lib/logic/cast.lua
+lib/logic/cmd_handlers.lua
 lib/logic/events.lua
+lib/logic/keybind_cast.lua
+lib/logic/priority.lua
 
 lib/ui/config.lua
-
 lib/ui/frames.lua
+lib/ui/options_interface.lua
