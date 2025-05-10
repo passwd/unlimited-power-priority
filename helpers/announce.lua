@@ -7,7 +7,7 @@ function UnlimitedPowerPriority:AnnouncePowerInfusion(unit)
         SendChatMessage(formatMessage(self.db.announceMessages.Say, unit), "SAY")
     end
 
-    if self.db.announceTargets["Whisper"] then
+    if self.db.announceTargets["Whisper"] and not UnitIsUnit(unit, "player") then
         SendChatMessage(formatMessage(self.db.announceMessages.Whisper, unit), "WHISPER", nil, UnitName(unit))
     end
 

@@ -19,6 +19,12 @@ SlashCmdList["UNLIMITEDPOWERPRIORITY"] = function(msg)
     msg = msg:lower():trim()
     msg = msg ~= "" and msg or "window"
 
+    if InCombatLockdown() and msg ~= "help" then
+        UnlimitedPowerPriority:Log("This command cannot be used during combat.")
+        return
+    end
+
+    UnlimitedPowerPriority:Log("Running CMD handlers")
     local handler = UnlimitedPowerPriority.handlers[msg]
     if handler then
         handler()
