@@ -20,13 +20,9 @@ function UnlimitedPowerPriority:CreateUnitSelectButton(
     local function updateButtonState()
         if self.db.spellTarget == unitId then
             btn:SetText("Targeted")
-            btn:SetBackdropColor(0.2, 1.0, 0.2, 0.3) -- light green background
         else
             btn:SetText("Select")
-            btn:SetBackdropColor(0, 0, 0, 0) -- transparent
         end
-        btn.Text:ClearAllPoints()
-        btn.Text:SetPoint("CENTER", 0, -1)
     end
 
     btn:SetScript("OnEnter", function()

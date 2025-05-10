@@ -26,8 +26,6 @@ function UnlimitedPowerPriority:RegisterCastNotificationHook()
             if usedTarget == fallback then
                 self:Log("UPP: Power Infusion cast on fallback (focus) instead of selected target.")
             end
-        else
-            self:Log("UPP: Power Infusion cast, but no valid target found.")
         end
     end)
 

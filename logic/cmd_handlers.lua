@@ -27,3 +27,16 @@ UnlimitedPowerPriority.handlers = {
         UnlimitedPowerPriority:Log("  |cffffff78/upp minimap|r - Toggle minimap icon")
     end
 }
+
+
+for key, handler in pairs(UnlimitedPowerPriority.handlers) do
+    if key ~= "help" then
+        UnlimitedPowerPriority.handlers[key] = function(...)
+            if InCombatLockdown() then
+                UnlimitedPowerPriority:Log("Unable to run action in combat")
+                return
+            end
+            handler(...)
+        end
+    end
+end

@@ -1,31 +1,31 @@
-## Interface: 100007
+## Interface: 110105
 ## Title: Unlimited Power Priority
 ## Notes: Prioritize Power Infusion targets
 ## Version: 0.2
 ## Author: Ndika-Lightbringer
 ## SavedVariables: UPP_Saved
-## Dependencies: Blizzard_Settings
+## X-License: MIT
 
-lib/externals/libdatabroker-1-1/LibDataBroker-1.1.lua
-lib/externals/LibDBIcon-1.0/LibDBIcon-1.0/LibDBIcon-1.0.lua
+lib/libdatabroker-1-1/LibDataBroker-1.1.lua
+lib/LibDBIcon-1.0/LibDBIcon-1.0/LibDBIcon-1.0.lua
 
-lib/core.lua
+core.lua
 
-lib/constants/icons.lua
-lib/constants/chat_messages.lua
+constants/icons.lua
+constants/chat_messages.lua
 
-lib/helpers/announce.lua
-lib/helpers/button_icons.lua
-lib/helpers/create_macro.lua
-lib/helpers/log.lua
+helpers/announce.lua
+helpers/unit_select_btn.lua
+helpers/create_macro.lua
+helpers/log.lua
 
-lib/logic/cast.lua
-lib/logic/cmd_handlers.lua
-lib/logic/events.lua
+logic/cast.lua
+logic/cmd_handlers.lua
+logic/events.lua
 
-lib/ui/frames.lua
-lib/ui/options_interface.lua
-lib/ui/minimap.lua
+ui/frames.lua
+ui/options_interface.lua
+ui/minimap.lua
 
 
 

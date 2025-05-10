@@ -21,7 +21,7 @@ function UnlimitedPowerPriority:EnsureMacro()
     else
         -- Update existing macro with current target
         EditMacro(existingMacroIndex, name, icon, body)
-        self:Log("PI Macro Updated:")
+        self:Log("PI Macro Updated:", name)
         self.db.macroCreated = true
     end
 end
