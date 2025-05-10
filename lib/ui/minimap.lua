@@ -26,3 +26,14 @@ function UnlimitedPowerPriority:CreateMinimapIcon()
     self.db.minimap = self.db.minimap or { hide = false }
     LibStub("LibDBIcon-1.0"):Register("UnlimitedPowerPriority", self.minimapIcon, self.db.minimap)
 end
+
+function UnlimitedPowerPriority:ToggleMinimapIcon()
+    local icon = LibStub("LibDBIcon-1.0")
+    if self.db.minimap.hide then
+        icon:Show("UnlimitedPowerPriority")
+        self.db.minimap.hide = false
+    else
+        icon:Hide("UnlimitedPowerPriority")
+        self.db.minimap.hide = true
+    end
+end

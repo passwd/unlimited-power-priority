@@ -17,6 +17,7 @@ end)
 SLASH_UNLIMITEDPOWERPRIORITY1 = '/upp'
 SlashCmdList["UNLIMITEDPOWERPRIORITY"] = function(msg)
     msg = msg:lower():trim()
+    msg = msg ~= "" and msg or "window"
 
     local handler = UnlimitedPowerPriority.handlers[msg]
     if handler then

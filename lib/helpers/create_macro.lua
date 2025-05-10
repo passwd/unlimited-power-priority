@@ -1,9 +1,12 @@
 function UnlimitedPowerPriority:EnsureMacro()
     local name = "UPP_CastPI"
     local icon = "Spell_Holy_PowerInfusion"
-    local target = self.db.spellTarget or "focus" -- fallback default
+    local target = (type(self.db.spellTarget) == "string" 
+        and self.db.spellTarget ~= "") 
+        and self.db.spellTarget or "focus"
+
     local body = string.format(
-        "#showtooltip Power Infusion\n/cast [@%s,help,nodead][@focus,help,nodead] Power Infusion",
+        "#showtooltip Power Infusion\n/cast [@%s,help,nodead][@focus,help,nodead][@player] Power Infusion",
         target
     )
 
