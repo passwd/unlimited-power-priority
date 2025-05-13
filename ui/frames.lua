@@ -157,7 +157,7 @@ function UnlimitedPowerPriority:RefreshMemberList()
             nameText:SetText(name or "Unknown")
             nameText:SetTextColor(classColor.r, classColor.g, classColor.b)
 
-
+        
             -- Select Target
             local btnHeight = 22
             local selectBtn = self:CreateUnitSelectButton(
@@ -168,6 +168,19 @@ function UnlimitedPowerPriority:RefreshMemberList()
                 function()
                     self:ClearUnit(unit)
                 end)
+
+            local ilvlText = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+            ilvlText:SetPoint("RIGHT", selectBtn, "LEFT", -10, 0)
+            ilvlText:SetText("ilvl: .....") -- placeholder
+
+            if UnitIsUnit(unit, "player") then
+                local _, equipped = GetAverageItemLevel()
+                ilvlText:SetText(string.format("ilvl: %.1f", equipped))
+                self.unitIlvlCache[unit] = equipped
+            else
+                ilvlText:SetText("ilvl: 000.0")
+                self:RequestInspectIlvl(unit, ilvlText)
+            end
 
             table.insert(self.unitButtons, selectBtn)
         end

@@ -3,7 +3,7 @@ function UnlimitedPowerPriority:CreateUnitSelectButton(
     local btn = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate, BackdropTemplate")
     btn:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
     btn:SetSize(80, 22)
-    btn:SetPoint("RIGHT", parent, anchorPoint or "RIGHT", offsetX, 0)
+    btn:SetPoint("RIGHT", parent, anchorPoint or "RIGHT", 80, 0)
     btn:SetBackdrop({
         bgFile = "Interface\\Buttons\\WHITE8x8",
         edgeFile = nil,

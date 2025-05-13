@@ -1,11 +1,12 @@
 ## Interface: 110105
 ## Title: Unlimited Power Priority
 ## Notes: Prioritize Power Infusion targets
-## Version: v1.0.2
+## Version: v1.0.3
 ## Author: Ndika-Lightbringer
 ## SavedVariables: UPP_Saved
 ## X-License: MIT
 ## X-Curse-Project-ID: 1263081
+## LoadOnClass: PRIEST
 
 lib/libdatabroker-1-1/LibDataBroker-1.1.lua
 lib/LibDBIcon-1.0/LibDBIcon-1.0/LibDBIcon-1.0.lua
@@ -19,6 +20,7 @@ helpers/announce.lua
 helpers/unit_select_btn.lua
 helpers/create_macro.lua
 helpers/log.lua
+helpers/ilvl_request.lua
 
 logic/cast.lua
 logic/cmd_handlers.lua
