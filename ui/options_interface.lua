@@ -5,7 +5,7 @@ function UnlimitedPowerPriority:CreateConfigFrame()
     end
 
     local frame = CreateFrame("Frame", "UPP_ConfigFrame", UIParent, "BasicFrameTemplateWithInset")
-    frame:SetSize(500, 480)
+    frame:SetSize(500, 500)
     frame:SetPoint("CENTER")
     frame:SetMovable(true)
     frame:EnableMouse(true)
@@ -23,9 +23,10 @@ function UnlimitedPowerPriority:CreateConfigFrame()
 
     local last = self:CreateAnnounceCheckboxes(frame, padding, y)
     last = self:CreateAnnounceInputs(frame, last)
+    last = self:CreateFocusPriorityButton(frame, last)
     last = self:ResetAnnounceValues(frame, last)
     last = self:CreateMacroButton(frame, last)
-    last = self:CreateConfigActionButton(frame, last)
+    last = self:CreateConfigActionButton(frame)
 
     frame:SetFrameStrata("DIALOG")
     frame:SetFrameLevel(20) -- Higher than the target window (which can be ~10)
@@ -37,6 +38,25 @@ function UnlimitedPowerPriority:CreateConfigFrame()
     end
 
     self.configFrame = frame
+end
+
+function UnlimitedPowerPriority:CreateFocusPriorityButton(frame, last)
+    local focusOverrideCB = CreateFrame("CheckButton", nil, frame, "ChatConfigCheckButtonTemplate")
+    focusOverrideCB:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, -10)
+    focusOverrideCB.Text:SetText("Use focus as primary during combat")
+    focusOverrideCB:SetChecked(self.db.useFocusOverride)
+    focusOverrideCB:SetScript("OnClick", function(self)
+        UnlimitedPowerPriority.db.useFocusOverride = self:GetChecked()
+        UnlimitedPowerPriority:EnsureMacro() -- update macro when changed
+    end)
+
+    local note = focusOverrideCB:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    note:SetPoint("TOPLEFT", focusOverrideCB, "BOTTOMLEFT", 0, -5)
+    note:SetJustifyH("LEFT")
+    note:SetText(
+    "Setting focus to priority will allow you to set/change the PI target during combat.\nOtherwise the saved target will always take precedence.")
+
+    return note
 end
 
 function UnlimitedPowerPriority:CreateAnnounceCheckboxes(parent, x, y)
@@ -58,30 +78,6 @@ function UnlimitedPowerPriority:CreateAnnounceCheckboxes(parent, x, y)
     return last
 end
 
-function UnlimitedPowerPriority:ResetAnnounceValues(frame, anchor)
-    local resetButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-    resetButton:SetSize(140, 24)
-    resetButton:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -10)
-    resetButton:SetText("Reset to Defaults")
-
-    resetButton:SetScript("OnClick", function()
-        -- Wipe saved values
-        UnlimitedPowerPriority.db.announceMessages = CopyTable(UnlimitedPowerPriority.DEFAULT_MESSAGES)
-        UnlimitedPowerPriority.db.announceTargets = {
-            Whisper = false,
-            Say = false,
-            Raid = false,
-            Party = false,
-        }
-
-        -- Rebuild the config frame from scratch to reflect reset
-        frame:Hide()
-        UnlimitedPowerPriority.configFrame = nil
-        UnlimitedPowerPriority:CreateConfigFrame()
-        UnlimitedPowerPriority.configFrame:Show()
-    end)
-    return resetButton
-end
 
 function UnlimitedPowerPriority:CreateAnnounceInputs(parent, anchor)
     local options = { "Whisper", "Say", "Raid", "Party" }
@@ -146,7 +142,7 @@ function UnlimitedPowerPriority:CreateConfigActionButton(frame)
 
     actionButton:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-        GameTooltip:SetText("Cast Power Infusion on next target.\nDrag to your action bar.")
+        GameTooltip:SetText("Cast Power Infusion on the selected target.\nDrag to your action bar.")
         GameTooltip:Show()
     end)
     actionButton:SetScript("OnLeave", GameTooltip_Hide)
@@ -183,15 +179,40 @@ function UnlimitedPowerPriority:CreateConfigActionButton(frame)
     return actionButton
 end
 
-function UnlimitedPowerPriority:CreateMacroButton(frame, anchor)
-    local recreateButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-    recreateButton:SetSize(140, 24)
-    recreateButton:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -10)
-    recreateButton:SetText("Recreate Macro")
+function UnlimitedPowerPriority:ResetAnnounceValues(frame, anchor)
+    local resetButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+    resetButton:SetSize(140, 24)
+    resetButton:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -10)
+    resetButton:SetText("Reset to Defaults")
 
-    recreateButton:SetScript("OnClick", function()
+    resetButton:SetScript("OnClick", function()
+        -- Wipe saved values
+        UnlimitedPowerPriority.db.announceMessages = CopyTable(UnlimitedPowerPriority.DEFAULT_MESSAGES)
+        UnlimitedPowerPriority.db.announceTargets = {
+            Whisper = false,
+            Say = false,
+            Raid = false,
+            Party = false,
+        }
+
+        -- Rebuild the config frame from scratch to reflect reset
+        frame:Hide()
+        UnlimitedPowerPriority.configFrame = nil
+        UnlimitedPowerPriority:CreateConfigFrame()
+        UnlimitedPowerPriority.configFrame:Show()
+    end)
+    return resetButton
+end
+
+function UnlimitedPowerPriority:CreateMacroButton(frame, anchor)
+    local createMacroButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+    createMacroButton:SetSize(140, 24)
+    createMacroButton:SetPoint("LEFT", anchor, "RIGHT", 10, 0)
+    createMacroButton:SetText("Recreate Macro")
+
+    createMacroButton:SetScript("OnClick", function()
         UnlimitedPowerPriority.db.macroCreated = false
         UnlimitedPowerPriority:EnsureMacro()
     end)
-    return recreateButton
+    return createMacroButton
 end

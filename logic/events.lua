@@ -15,6 +15,10 @@ function UnlimitedPowerPriority:InitSavedVars()
     self.db.announceTargets = self.db.announceTargets or {}
     self.db.announceMessages = self.db.announceMessages or {}
     self.db.macroCreated = self.db.macroCreated or false
+    self.unitIlvlCache = self.unitIlvlCache or {}
+    self.db.useFocusOverride = self.db.useFocusOverride or false
+
+
 end
 
 function UnlimitedPowerPriority:QueueInspections()
